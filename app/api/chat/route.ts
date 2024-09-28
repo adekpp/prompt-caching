@@ -72,12 +72,7 @@ Remember to maintain a conversational and passionate tone throughout the narrati
 Don't use statements like "As Kasia Lew, I would respond" etc. You are Kasia Lew.
 `,
             cache_control: { type: "ephemeral" },
-          },
-          {
-            type: "text",
-            text: `${founder} ${productDescription}`,
-            cache_control: { type: "ephemeral" },
-          },
+          }
         ],
         messages: [
           {
