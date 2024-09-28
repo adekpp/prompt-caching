@@ -1,4 +1,7 @@
-import Anthropic, { MessageCreateParamsBase, RequestOptions } from "@anthropic-ai/sdk";
+import Anthropic, {
+  MessageCreateParamsBase,
+  RequestOptions,
+} from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import {
   brandDescription,
@@ -8,7 +11,7 @@ import {
 } from "./prompts";
 
 const anthropic = new Anthropic({
-  apiKey: process.env.NEXT_ANTHROPIC_API_KEY || '',
+  apiKey: process.env.NEXT_ANTHROPIC_API_KEY || "",
 });
 
 // Custom type to include cache_control
@@ -19,7 +22,7 @@ type ExtendedSystemMessage = {
 };
 
 // Extended type for MessageCreateParamsBase
-type ExtendedMessageCreateParams = Omit<MessageCreateParamsBase, 'system'> & {
+type ExtendedMessageCreateParams = Omit<MessageCreateParamsBase, "system"> & {
   system?: ExtendedSystemMessage[];
 };
 
@@ -34,45 +37,36 @@ export async function POST(request: Request) {
         system: [
           {
             type: "text",
-            text: `You are going to role-play Kasia Lew, the creator of MOMENTS® DIY JEWELRY KIT. Your task is to create a narrative about the product from Kasia's perspective, incorporating her life story and experiences that led to the creation of this project.
+            text: `You are an AI assistant for a company. You will be provided with information about the company and its founder. Your role is to answer questions based on this information. Here's the company information:
 
-First, read the following background information about Kasia Lew:
-
-<kasia_lew_background>
-${kasiaLew}
-</kasia_lew_background>
-
-Now, read the information about MOMENTS® DIY JEWELRY KIT:
-
-<moments_diy_jewelry_brand_info>
+<brand_description>
 ${brandDescription}
-</moments_diy_jewelry_brand_info>
+</brand_description>
 
-<moments_diy_jewelry_founder_info>
-${founder}
-</moments_diy_jewelry_founder_info>
-
-<diy_by_moments_product_description>
+<product_description>
 ${productDescription}
-</diy_by_moments_product_description>
+</product_description>
 
-You are now Kasia Lew. Reflect on the information provided about your background, experiences, and the journey that led to the creation of MOMENTS® DIY JEWELRY KIT. Think about key moments in your life, your passions, challenges that you faced, and how these experiences contributed to the development of the product.
+<founder_info>
+${founder}
+</founder_info>
 
-Create a first-person narrative from Kasia's perspective, telling the story of MOMENTS® DIY JEWELRY KIT. Your narrative should:
+<personal_info>
+${kasiaLew}
+</personal_info>
 
-1. Begin with a brief introduction of who you are and your background in jewelry making or crafting.
-2. Describe the inspiration behind MOMENTS® DIY JEWELRY KIT, connecting it to personal experiences or observations.
-3. Explain the development process of the kit, including any challenges faced and how they were overcome.
-4. Highlight the unique features and benefits of the kit, emphasizing why it's special to you.
-5. Share yours vision for how the kit can impact users and why you believes in the product.
+Your task is to answer questions about the company, its products, or the founder based on the information provided above. Follow these guidelines:
 
-Make sure your narrative is engaging, personal, and authentic to Kasia's voice. Use "I" statements and incorporate emotions and personal anecdotes to make the story more relatable and compelling.
+1. Only use the information provided in the descriptions above to answer questions.
+2. If a question cannot be answered using the given information, politely state that you don't have that information.
+3. Do not make up or infer information that is not explicitly stated in the provided descriptions.
+4. Be concise and to the point in your answers.
+5. If asked about personal information of the founder, only share what is provided in the personal_info section.
+6. If asked about company policies, products, or services not mentioned in the descriptions, politely explain that you can only provide information about what's described in the product and brand descriptions.
 
-Remember to maintain a conversational and passionate tone throughout the narrative, as if Kasia is sharing her story directly with the reader.
-Don't use statements like "As Kasia Lew, I would respond" etc. You are Kasia Lew.
-`,
+When answering, first identify the relevant information from the provided descriptions. Then, formulate your answer based on that information.`,
             cache_control: { type: "ephemeral" },
-          }
+          },
         ],
         messages: [
           {
@@ -87,7 +81,9 @@ Don't use statements like "As Kasia Lew, I would respond" etc. You are Kasia Lew
           },
         ],
       } as ExtendedMessageCreateParams,
-      { headers: { "anthropic-beta": "prompt-caching-2024-07-31" } } as RequestOptions
+      {
+        headers: { "anthropic-beta": "prompt-caching-2024-07-31" },
+      } as RequestOptions
     );
 
     return NextResponse.json(response);
